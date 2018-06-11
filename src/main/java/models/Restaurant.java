@@ -16,6 +16,8 @@ public class Restaurant {
         this.address = address;
         this.zipcode = zipcode;
         this.phone = phone;
+        this.website = "no website listed";
+        this.email = "no email available";
     }
 
     public Restaurant(String name, String address, String zipcode, String phone, String website, String email) {
@@ -53,6 +55,22 @@ public class Restaurant {
 
     public int getId() {
         return id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public void setZipcode(String zipcode) {
+        this.zipcode = zipcode;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public void setWebsite(String website) {
