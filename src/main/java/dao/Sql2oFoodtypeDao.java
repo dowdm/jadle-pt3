@@ -38,9 +38,13 @@ public class Sql2oFoodtypeDao implements FoodtypeDao{
     @Override
     public void deleteById(int id) {
         String sql = "DELETE from foodtypes WHERE id=:id";
+        String joinQuery = "DELETE from restaurants_foodtypes WHERE foodtypeid = :foodtypeId";
         try (Connection con = sql2o.open()) {
             con.createQuery(sql)
                     .addParameter("id", id)
+                    .executeUpdate();
+            con.createQuery(joinQuery)
+                    .addParameter("foodtypeId", id)
                     .executeUpdate();
         } catch (Sql2oException ex) {
             System.out.println(ex);
