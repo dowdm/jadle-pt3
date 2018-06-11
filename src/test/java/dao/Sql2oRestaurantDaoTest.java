@@ -1,5 +1,6 @@
 package dao;
 
+import models.Foodtype;
 import models.Restaurant;
 import org.junit.After;
 import org.junit.Before;
@@ -7,17 +8,21 @@ import org.junit.Test;
 import org.sql2o.Connection;
 import org.sql2o.Sql2o;
 
+import java.util.Arrays;
+
 import static org.junit.Assert.*;
 
 public class Sql2oRestaurantDaoTest {
     private Connection conn;
     private Sql2oRestaurantDao restaurantDao;
+    private  Sql2oFoodtypeDao foodtypeDao;
     
     @Before
     public void setUp() throws Exception {
         String connectionString = "jdbc:h2:mem:testing;INIT=RUNSCRIPT from 'classpath:db/create.sql'";
         Sql2o sql2o = new Sql2o(connectionString, "", "");
         restaurantDao = new Sql2oRestaurantDao(sql2o);
+        foodtypeDao = new Sql2oFoodtypeDao(sql2o);
         conn = sql2o.open();
     }
 
@@ -35,7 +40,7 @@ public class Sql2oRestaurantDaoTest {
     @Test
     public void getAll() throws Exception {
         Restaurant restaurant1 = setupRestaurant();
-        Restaurant restaurant2 = setupRestaurant();
+        Restaurant restaurant2 = setupAltRestaurant();
         assertEquals(2, restaurantDao.getAll().size());
     }
 
@@ -48,9 +53,22 @@ public class Sql2oRestaurantDaoTest {
     }
 
     @Test
+    public void updateCorrectlyUpdatesAllFields() throws Exception {
+        Restaurant testRestaurant = setupRestaurant();
+        restaurantDao.update(testRestaurant.getId(), "a", "b", "c", "d", "e", "f");
+        Restaurant foundRestaurant = restaurantDao.findById(testRestaurant.getId());
+        assertEquals("a", foundRestaurant.getName());
+        assertEquals("b", foundRestaurant.getAddress());
+        assertEquals("c", foundRestaurant.getZipcode());
+        assertEquals("d", foundRestaurant.getPhone());
+        assertEquals("e", foundRestaurant.getWebsite());
+        assertEquals("f", foundRestaurant.getEmail());
+    }
+
+    @Test
     public void deleteById() throws Exception {
         Restaurant testRestaurant = setupRestaurant();
-        Restaurant otherRestaurant = setupRestaurant();
+        Restaurant otherRestaurant = setupAltRestaurant();
         assertEquals(2, restaurantDao.getAll().size());
         restaurantDao.deleteById(testRestaurant.getId());
         assertEquals(1, restaurantDao.getAll().size());
@@ -64,11 +82,33 @@ public class Sql2oRestaurantDaoTest {
         assertEquals(0, restaurantDao.getAll().size());
     }
 
+    @Test
+    public void RestaurantReturnsFoodtypesCorrectly() {
+        Foodtype testFoodtype  = new Foodtype("Seafood");
+        foodtypeDao.add(testFoodtype);
+
+        Foodtype otherFoodtype  = new Foodtype("Bar Food");
+        foodtypeDao.add(otherFoodtype);
+
+        Restaurant testRestaurant = setupRestaurant();
+        restaurantDao.addRestaurantToFoodType(testRestaurant, testFoodtype);
+        restaurantDao.addRestaurantToFoodType(testRestaurant, otherFoodtype);
+
+        Foodtype[] foodtypes = {testFoodtype, otherFoodtype};
+
+        assertEquals(Arrays.asList(foodtypes), restaurantDao.getAllFoodtypesForARestaurant(testRestaurant.getId()));
+    }
+
     public Restaurant setupRestaurant (){
         Restaurant restaurant = new Restaurant("Fish Witch", "214 NE Broadway", "97232", "503-402-9874", "http://fishwitch.com", "hellofishy@fishwitch.com");
         restaurantDao.add(restaurant);
         return restaurant;
+    }
 
+    public Restaurant setupAltRestaurant (){
+        Restaurant restaurant = new Restaurant("Fish Witch", "214 NE Broadway", "97232", "503-402-9874");
+        restaurantDao.add(restaurant);
+        return restaurant;
     }
 
 }
