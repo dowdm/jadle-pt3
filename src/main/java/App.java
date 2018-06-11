@@ -47,12 +47,12 @@ public class App {
 
         get("/restaurants/delete", "application/json", (req, res) -> {
             restaurantDao.clearAll();
-            return gson.toJson(restaurantDao.getAll());
+            return "{\"message\":\"All restaurants deleted.\"}";
         });
 
         get("/foodtypes/delete", "application/json", (req, res) -> {
             foodtypeDao.clearAll();
-            return gson.toJson(foodtypeDao.getAll());
+            return "{\"message\":\"All foodtypes deleted.\"}";
         });
 
         get("/restaurants", "application/json", (req, res) -> {
