@@ -8,6 +8,8 @@ import org.junit.Test;
 import org.sql2o.Connection;
 import org.sql2o.Sql2o;
 
+import java.util.List;
+
 import static org.junit.Assert.*;
 
 public class Sql2oReviewDaoTest {
@@ -119,9 +121,13 @@ public class Sql2oReviewDaoTest {
 
         Review testFourthReview = new Review("I prefer home cooking","Mr. Sulu", 2,  testRestaurant.getId());
         reviewDao.add(testFourthReview);
-
-        assertEquals(4, reviewDao.getAllReviewsByRestaurant(testRestaurant.getId()).size()); //it is important we verify that the list is the same size.
-        assertEquals("I prefer home cooking", reviewDao.getAllReviewsByRestaurantSortedNewestToOldest(testRestaurant.getId()).get(0).getContent());
+        List<Review> sortedReviews = reviewDao.getAllReviewsByRestaurantIdSortedNewestToOldest(testRestaurant.getId());
+        System.out.println(sortedReviews.get(0).getContent());
+        System.out.println(sortedReviews.get(1).getContent());
+        System.out.println(sortedReviews.get(2).getContent());
+        System.out.println(sortedReviews.get(3).getContent());
+        assertEquals(4, sortedReviews.size()); //it is important we verify that the list is the same size.
+        assertEquals("I prefer home cooking", sortedReviews.get(0).getContent());
     }
 
     //helpers

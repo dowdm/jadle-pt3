@@ -104,7 +104,7 @@ public class App {
             if (restaurantToFind == null){
                 throw new ApiException(404, String.format("No restaurant with the id: \"%s\" exists", req.params("id")));
             }
-            allReviews = reviewDao.getAllReviewsByRestaurantSortedNewestToOldest(restaurantId);
+            allReviews = reviewDao.getAllReviewsByRestaurantIdSortedNewestToOldest(restaurantId);
             return gson.toJson(allReviews);
         });
 

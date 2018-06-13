@@ -10,7 +10,10 @@ import java.util.List;
 
 public class Sql2oReviewDao implements ReviewDao {
     private final Sql2o sql2o;
-    public Sql2oReviewDao(Sql2o sql2o) { this.sql2o = sql2o; }
+
+    public Sql2oReviewDao(Sql2o sql2o) {
+        this.sql2o = sql2o;
+    }
 
     @Override
     public void add(Review review) {
@@ -66,32 +69,20 @@ public class Sql2oReviewDao implements ReviewDao {
     }
 
     @Override
-    public List<Review> getAllReviewsByRestaurantSortedNewestToOldest(int restaurantId) {
-        List<Review> unsortedReviews = getAllReviewsByRestaurant(restaurantId);
-        List<Review> sortedReviews = new ArrayList<>();
-        int i = 1;
-        for (Review review : unsortedReviews){
-            int comparisonResult;
-            if (i == unsortedReviews.size()) { //we need to do some funky business here to avoid an arrayindex exception and handle the last element properly
-                if (review.compareTo(unsortedReviews.get(i-1)) == -1){
-                    sortedReviews.add(0, unsortedReviews.get(i-1));
-                }
-                break;
-            }
-
-            else {
-                if (review.compareTo(unsortedReviews.get(i)) == -1) { //first object was made earlier than second object
-                    sortedReviews.add(0, unsortedReviews.get(i));
-                    i++;
-                } else if (review.compareTo(unsortedReviews.get(i)) == 0) {//probably should have a tie breaker here as they are the same.
-                    sortedReviews.add(0, unsortedReviews.get(i));
-                    i++;
-                } else {
-                    sortedReviews.add(0, unsortedReviews.get(i)); //push the first object to the list as it is newer than the second object.
-                    i++;
+    public List<Review> getAllReviewsByRestaurantIdSortedNewestToOldest(int restaurantId) {
+        List<Review> reviews = getAllReviewsByRestaurant(restaurantId);
+        for(int j = 1; j <= reviews.size(); j++){
+            for (Integer index = 0; index < reviews.size() - 1; index++) {
+                Review review1 = reviews.get(index);
+                Review review2 = reviews.get(index + 1);
+                int compareResult = review1.compareTo(reviews.get(index + 1));
+                if (compareResult == -1) {
+                    reviews.set(index, review2);
+                    reviews.set(index + 1, review1);
                 }
             }
         }
-        return sortedReviews;
+
+        return reviews;
     }
 }
